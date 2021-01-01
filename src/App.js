@@ -224,25 +224,32 @@ const CustomStyle = ({ fakeRandomHash, block = blocks[2]}) => {
         if(tileRandomish>55000 || t>13 && tileRandomish>40000 || t>14 && tileRandomish>20000 || t>=14 ){
           underwater=true
           tileList[t] = 0
+          //console.log("=)rightedge")
           p5.image(rightEdge, (t)*87, landHorizon, 87, 125);
         }else if(tileRandomish>20000){
           tileList[t] = commonTiles[tileRandomish%commonTiles.length]
+          //console.log("=)-"+tileList[t])
           p5.image(tiles[tileList[t]-1], (t)*87, landHorizon, 87, 125);
         }else if(tileRandomish>15000){
           tileList[t] = exoticResourceTiles[tileRandomish%exoticResourceTiles.length]
+          //console.log("=)-"+tileList[t])
           p5.image(tiles[tileList[t]-1], (t)*87, landHorizon, 87, 125);
         }else if(tileRandomish>10000){
           tileList[t] = settlersTiles[tileRandomish%settlersTiles.length]
+          //console.log("=)-"+tileList[t])
           p5.image(tiles[tileList[t]-1], (t)*87, landHorizon, 87, 125);
         }else if(tileRandomish>8000){
           tileList[t] = villageTiles[tileRandomish%villageTiles.length]
+          //console.log("=)-"+tileList[t])
           p5.image(tiles[tileList[t]-1], (t)*87, landHorizon, 87, 125);
         }else if(tileRandomish>7000){
           tileList[t] = castleTiles[tileRandomish%castleTiles.length]
+          //console.log("=)-"+tileList[t])
           p5.image(tiles[tileList[t]-1], (t)*87, landHorizon, 87, 125);
         }else {
           tileList[t] = tileRandomish%tiles.length
-          p5.image(tiles[tileList[t]-1] , (t)*87, landHorizon, 87, 125);
+          //console.log("=)-"+tileList[t])
+          p5.image(tiles[tileList[t]] , (t)*87, landHorizon, 87, 125);
         }
       }
     }
