@@ -54,11 +54,11 @@ const CustomStyle = ({ fakeRandomHash, block = blocks[2]}) => {
   const horizon = SIZE/2
 
 
-  /*if(!fakeRandomHash){
+  if(!fakeRandomHash){
     return <div>hashing it out...</div>
   }else{
     console.log("fakeRandomHash is ",fakeRandomHash)
-  }*/
+  }
   const { hash } = block
   //const hash = fakeRandomHash
 
@@ -169,8 +169,12 @@ const CustomStyle = ({ fakeRandomHash, block = blocks[2]}) => {
     }
 
     p5.background(0);
-    p5.image(sky, 0, 0, 4000, SIZE/2);
-    p5.image(sea, 0, SIZE/2, 4000, SIZE/2);
+
+    let possibleOffset = 4000-SIZE
+
+    p5.image(sky, 0-possibleOffset*takeTwoBytesOfEntropy()/65535, 0, 4000, SIZE/2);
+    p5.image(sea, 0-possibleOffset*takeTwoBytesOfEntropy()/65535, SIZE/2, 4000, SIZE/2);
+
 
     for(let c=1;c<8;c++){
       let blocksTraveled = 0;
