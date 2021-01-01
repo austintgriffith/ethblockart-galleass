@@ -54,13 +54,13 @@ const CustomStyle = ({ fakeRandomHash, block = blocks[2]}) => {
   const horizon = SIZE/2
 
 
-  if(!fakeRandomHash){
+  /*if(!fakeRandomHash){
     return <div>hashing it out...</div>
   }else{
     console.log("fakeRandomHash is ",fakeRandomHash)
-  }
-  //const { hash } = block
-  const hash = fakeRandomHash
+  }*/
+  const { hash } = block
+  //const hash = fakeRandomHash
 
   let cloudSizes = [
     [400,152],
