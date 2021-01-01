@@ -13,6 +13,39 @@ const SHIPDEPTH = SIZE/4
 const FISH_DENSITY = 42
 const MAXGAS = 15000000
 
+const FOREST = 1
+const GRASS = 2
+const DOCK = 3
+const MOREGRASS = 4
+const RIVER = 5
+const EVENMOREGRASS = 6
+const SETTLERSDOCK = 7
+const COPPERMTN = 8
+const CORN = 9
+const DEADGRASS = 10
+const SETTLERS = 11
+const DEADMTN = 12
+const MOREDEADGRASS = 13
+const DEADTIMBER = 14
+const MOREMOREDEADGRASS = 15
+const MOREDEADMTN = 16
+const FISHMONGER = 17
+const COURTHOUSE = 18
+const MOREMOREMOREDEADGRASS = 19
+const HARBOR = 20
+const MARKET = 21
+const TIMBERMILL = 22
+const MININGCAMP = 23
+const MININGSHAFT = 24
+const MTN = 25
+const SILVERMTNCAMP = 26
+const SILVERMTN = 27
+const TIMBERCAMP = 28
+const VILLAGERS = 29
+const VILLAGERSDOCK = 30
+const WARRIORS = 31
+const WARRIORSDOCK = 32
+
 
 const CustomStyle = ({ fakeRandomHash, block = blocks[2]}) => {
 
@@ -181,40 +214,6 @@ const CustomStyle = ({ fakeRandomHash, block = blocks[2]}) => {
         }
       }else{
 
-        const FOREST = 1
-        const GRASS = 2
-        const DOCK = 3
-        const MOREGRASS = 4
-        const RIVER = 5
-        const EVENMOREGRASS = 6
-        const SETTLERSDOCK = 7
-        const COPPERMTN = 8
-        const CORN = 9
-        const DEADGRASS = 10
-        const SETTLERS = 11
-        const DEADMTN = 12
-        const MOREDEADGRASS = 13
-        const DEADTIMBER = 14
-        const MOREMOREDEADGRASS = 15
-        const MOREDEADMTN = 16
-        const FISHMONGER = 17
-        const COURTHOUSE = 18
-        const MOREMOREMOREDEADGRASS = 19
-        const HARBOR = 20
-        const MARKET = 21
-        const TIMBERMILL = 22
-        const MININGCAMP = 23
-        const MININGSHAFT = 24
-        const MTN = 25
-        const SILVERMTNCAMP = 26
-        const SILVERMTN = 27
-        const TIMBERCAMP = 28
-        const VILLAGERS = 29
-        const VILLAGERSDOCK = 30
-        const WARRIORS = 31
-        const WARRIORSDOCK = 32
-
-
 
         const commonTiles = [  FOREST, GRASS, RIVER, GRASS, FOREST, MTN,/*3, 4, , 6, 9, 19, 18, 25 */]
         const keyResourceTiles = [ FOREST, CORN, MTN, TIMBERCAMP ]
@@ -380,12 +379,30 @@ const CustomStyle = ({ fakeRandomHash, block = blocks[2]}) => {
       p5.image( handwriting[translateChracterToPath(someString[l])] ,textStart + (TEXTSIZE/2)*l, horizon/3.77 ,TEXTSIZE,TEXTSIZE);
     }
 
+    /*
+    //given the list of rendered tiles we can do all sorts of stuff...
+    // was thinking it could have a population and the population
+    // would work on nearby tiles so each block has a different
+    // bonus of resources
 
-
-    //render  bonuses for tileList
     console.log(tileList)
 
+    const populationBonus = (tile)=>{
+      if(tile==SETTLERS) return 1;
+      if(tile==SETTLERSDOCK) return 2;
+      if(tile==VILLAGERS) return 3;
+      if(tile==VILLAGERSDOCK) return 4;
+      if(tile==WARRIORS) return 5;
+      if(tile==WARRIORSDOCK) return 6;
+      return 0;
+    }
 
+
+    for(let t in tileList){
+      let populationsAtWork = populationBonus(tileList[t])
+      //if(populationsAtWork>0) console.log("There is a population of "+populationsAtWork+" at tile "+t+"...")
+    }
+    */
 
     p5.image(topRightCorner,width-400,0,400,396);
     p5.image(topLeftCorner,0,0,400,396);
