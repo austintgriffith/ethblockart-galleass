@@ -490,7 +490,7 @@ const CustomStyle = ({
 
     TEXTSIZE = 64 * M;
     LETTER_SPACING = 64 * M;
-    someString = '' + parseInt(block.number, 16);
+    someString = '' + block.number
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
       //console.log("WRITINGE:",someString[l])
@@ -505,7 +505,7 @@ const CustomStyle = ({
 
     TEXTSIZE = 22 * M;
     LETTER_SPACING = 22 * M;
-    someString = '' + parseInt(block.timestamp, 16);
+    someString = '' + block.timestamp
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
       //console.log("WRITINGE:",someString[l])
