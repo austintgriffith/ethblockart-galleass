@@ -43,20 +43,16 @@ const VILLAGERSDOCK = 30;
 const WARRIORS = 31;
 const WARRIORSDOCK = 32;
 
-const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
+const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canvasRef }) => {
   const horizon = height / 2;
   const SIZE = width;
   let M = SIZE / DEFAULT_SIZE;
 
   const SHIPDEPTH = SIZE / 4;
 
-  // if(!fakeRandomHash){
-  //   return <div>hashing it out...</div>
-  // }else{
-  //   console.log("fakeRandomHash is ",fakeRandomHash)
-  // }
-  const { hash } = block;
   //const hash = fakeRandomHash
+  const { hash } = block;
+
 
   let cloudSizes = [
     [400, 152],
@@ -180,6 +176,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
     p5.background(0);
 
     let possibleOffset = 4000 - SIZE;
+    ///console.log("possibleOffset",possibleOffset)
 
     p5.image(
       sky.current,
@@ -188,6 +185,8 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       4000,
       SIZE / 2
     );
+
+
     p5.image(
       sea.current,
       0 - (possibleOffset * takeTwoBytesOfEntropy()) / 65535,
@@ -195,6 +194,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       4000,
       SIZE / 2
     );
+
 
     for (let c = 1; c < 8; c++) {
       let blocksTraveled = 0;
@@ -204,8 +204,8 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
 
       let location = startingLocation + blocksTraveled * speed;
       let cloudSize = cloudSizes[c - 1];
-      let cloudwidth = cloudSize[0];
-      let cloudheight = cloudSize[1];
+      let cloudwidth = cloudSize[0]*M;
+      let cloudheight = cloudSize[1]*M;
       location = width * (location / 65535);
       while (location > width) {
         location -= width + cloudwidth;
@@ -221,17 +221,20 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       p5.image(clouds.current[c - 1], location, top, cloudwidth, cloudheight);
     }
 
-    let landHorizon = horizon - 64;
+    let landHorizon = horizon - 45*M;
 
     let underwater = true;
 
     let tileList = [];
 
+    let tileWidth = 64 * M
+    let tileHeight = 100 * M
+
     for (let t = 0; t < 16; t++) {
       const tileRandomish = takeTwoBytesOfEntropy();
       if (underwater) {
         if (tileRandomish > 40000 && t < 10) {
-          p5.image(leftEdge.current, t * 87, landHorizon, 87, 125);
+          p5.image(leftEdge.current, t * tileWidth, landHorizon, tileWidth, tileHeight);
           underwater = false;
         }
       } else {
@@ -263,16 +266,16 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
           underwater = true;
           tileList[t] = 0;
           //console.log("=)rightedge")
-          p5.image(rightEdge.current, t * 87, landHorizon, 87, 125);
+          p5.image(rightEdge.current, t * tileWidth, landHorizon, tileWidth, tileHeight);
         } else if (tileRandomish > 20000) {
           tileList[t] = commonTiles[tileRandomish % commonTiles.length];
           //console.log("=)-"+tileList[t])
           p5.image(
             tiles.current[tileList[t] - 1],
-            t * 87,
+            t * tileWidth,
             landHorizon,
-            87,
-            125
+            tileWidth,
+            tileHeight
           );
         } else if (tileRandomish > 15000) {
           tileList[t] =
@@ -280,53 +283,53 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
           //console.log("=)-"+tileList[t])
           p5.image(
             tiles.current[tileList[t] - 1],
-            t * 87,
+            t * tileWidth,
             landHorizon,
-            87,
-            125
+            tileWidth,
+            tileHeight
           );
         } else if (tileRandomish > 10000) {
           tileList[t] = settlersTiles[tileRandomish % settlersTiles.length];
           //console.log("=)-"+tileList[t])
           p5.image(
             tiles.current[tileList[t] - 1],
-            t * 87,
+            t * tileWidth,
             landHorizon,
-            87,
-            125
+            tileWidth,
+            tileHeight
           );
         } else if (tileRandomish > 8000) {
           tileList[t] = villageTiles[tileRandomish % villageTiles.length];
           //console.log("=)-"+tileList[t])
           p5.image(
             tiles.current[tileList[t] - 1],
-            t * 87,
+            t * tileWidth,
             landHorizon,
-            87,
-            125
+            tileWidth,
+            tileHeight
           );
         } else if (tileRandomish > 7000) {
           tileList[t] = castleTiles[tileRandomish % castleTiles.length];
           //console.log("=)-"+tileList[t])
           p5.image(
             tiles.current[tileList[t] - 1],
-            t * 87,
+            t * tileWidth,
             landHorizon,
-            87,
-            125
+            tileWidth,
+            tileHeight
           );
         } else {
-          tileList[t] = tileRandomish % tiles.length;
+          tileList[t] = tileRandomish % tiles.current.length;
           //console.log("=)-"+tileList[t])
           if (tiles.current[tileList[t]]) {
-            p5.image(tiles.current[tileList[t]], t * 87, landHorizon, 87, 125);
+            p5.image(tiles.current[tileList[t]], t * tileWidth, landHorizon, tileWidth, tileHeight);
           }
         }
       }
     }
 
     let gasUsed = block.gasUsed;
-    console.log(gasUsed, 'ok');
+    //console.log(gasUsed, 'ok');
     let currentGasEntropyPointer = 2;
     let currentGasEntropy = keccak256(parseInt(gasUsed)).toString('hex');
     //console.log("startingGasEntropy",currentGasEntropy)
@@ -371,8 +374,8 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
         fish.current[fishType],
         (width * getGasEntropy()) / 65535,
         height - ((SIZE / 4) * getGasEntropy()) / 65535,
-        64,
-        32,
+        64*M,
+        32*M,
       ]);
     }
 
@@ -392,8 +395,8 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
 
       let location = startingLocation + blocksTraveled * speed;
       let cloudSize = cloudSizes[c - 1];
-      let cloudwidth = cloudSize[0];
-      let cloudheight = cloudSize[1];
+      let cloudwidth = cloudSize[0]*M;
+      let cloudheight = cloudSize[1]*M;
       location = SIZE * (location / 65535);
       while (location > width) {
         location -= width + cloudwidth;
@@ -410,42 +413,42 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
         oceanCover.current[c - 1],
         location,
         height - cloudheight,
-        cloudwidth * 2,
+        cloudwidth,
         cloudheight
       );
     }
 
-    // let orderedShips = [];
-    // for (let t in block.transactions) {
-    //   const transaction = block.transactions[t];
-    //   let currentTransactionEntropyPointer = 2;
-    //   const takeOneByteOfTransactionEntropy = () => {
-    //     let byte =
-    //       transaction[currentTransactionEntropyPointer++] +
-    //       transaction[currentTransactionEntropyPointer++];
-    //     byte = parseInt(byte, 16);
-    //     if (!RANDOM) return byte;
-    //     return Math.random() * 256;
-    //   };
-    //   orderedShips.push([
-    //     doggers.current[takeOneByteOfTransactionEntropy() % doggers.length],
-    //     (width * takeOneByteOfTransactionEntropy()) / 255,
-    //     horizon + 32 + (SHIPDEPTH * takeOneByteOfTransactionEntropy()) / 256,
-    //     DOGGERWIDTH,
-    //     DOGGERWIDTH * 0.9,
-    //   ]);
-    // }
+    let orderedShips = [];
+    for (let t in block.transactions) {
+      const transaction = block.transactions[t];
+      let currentTransactionEntropyPointer = 2;
+      const takeOneByteOfTransactionEntropy = () => {
+        let byte =
+          transaction[currentTransactionEntropyPointer++] +
+          transaction[currentTransactionEntropyPointer++];
+        byte = parseInt(byte, 16);
+        if (!RANDOM) return byte;
+        return Math.random() * 256;
+      };
+      orderedShips.push([
+        doggers.current[takeOneByteOfTransactionEntropy() % doggers.current.length],
+        ((width * takeOneByteOfTransactionEntropy()) / 255)-DOGGERWIDTH/2,
+        horizon + 32 + (SHIPDEPTH * takeOneByteOfTransactionEntropy()) / 256,
+        DOGGERWIDTH * 0.777 * M,
+        DOGGERWIDTH * 0.777* 0.9 *M,
+      ]);
+    }
 
-    // orderedShips.sort((a, b) => {
-    //   return a[2] - b[2];
-    // });
+    orderedShips.sort((a, b) => {
+      return a[2] - b[2];
+    });
 
-    // for (let s in orderedShips) {
-    //   p5.image(...orderedShips[s]);
-    // }
+    for (let s in orderedShips) {
+      p5.image(...orderedShips[s]);
+    }
 
-    let TEXTSIZE = 32;
-    let LETTER_SPACING = 32;
+    let TEXTSIZE = 22 * M;
+    let LETTER_SPACING = 22 * M;
     let someString = block.hash;
     let textStart =
       width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
@@ -454,14 +457,14 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       p5.image(
         handwriting.current[translateChracterToPath(someString[l])],
         textStart + (TEXTSIZE / 2) * l,
-        horizon / 5,
+        horizon / 4,
         TEXTSIZE,
         TEXTSIZE
       );
     }
 
-    TEXTSIZE = 64;
-    LETTER_SPACING = 64;
+    TEXTSIZE = 64  * M;
+    LETTER_SPACING = 64  * M;
     someString = '' + parseInt(block.number, 16);
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
@@ -475,8 +478,8 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       );
     }
 
-    TEXTSIZE = 32 * M;
-    LETTER_SPACING = 32;
+    TEXTSIZE = 22 * M;
+    LETTER_SPACING = 22  * M;
     someString = '' + parseInt(block.timestamp, 16);
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
@@ -484,19 +487,21 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       p5.image(
         handwriting.current[translateChracterToPath(someString[l])],
         textStart + (TEXTSIZE / 2) * l,
-        horizon / 3.77,
+        horizon / 3,
         TEXTSIZE,
         TEXTSIZE
       );
     }
 
+
+    //console.log(tileList)
     /*
     //given the list of rendered tiles we can do all sorts of stuff...
     // was thinking it could have a population and the population
     // would work on nearby tiles so each block has a different
     // bonus of resources
 
-    console.log(tileList)
+
 
     const populationBonus = (tile)=>{
       if(tile==SETTLERS) return 1;

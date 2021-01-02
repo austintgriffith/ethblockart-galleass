@@ -40,6 +40,7 @@ function App() {
           height={height}
           canvasRef={canvasRef}
           handleResize={_onCanvasResize}
+          fakeRandomHash={fakeRandomHash}
         />
       ) : null}
     </div>
