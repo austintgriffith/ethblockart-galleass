@@ -50,6 +50,7 @@ const CustomStyle = ({
   width,
   height,
   canvasRef,
+  attributesRef,
 }) => {
   const horizon = height / 2;
   const SIZE = width;
@@ -57,8 +58,8 @@ const CustomStyle = ({
 
   const SHIPDEPTH = SIZE / 4;
 
-  const hash = fakeRandomHash
-  //const { hash } = block;
+  //const hash = fakeRandomHash
+  const { hash } = block;
 
   let cloudSizes = [
     [400, 152],
@@ -79,7 +80,6 @@ const CustomStyle = ({
   let doggers = useRef([]);
   let fish = useRef([]);
   let tiles = useRef([]);
-  let timber = useRef();
 
   let topLeftCorner = useRef();
   let topRightCorner = useRef();
@@ -127,10 +127,6 @@ const CustomStyle = ({
     topRightCorner.current = p5.loadImage('/galleass/toprightcorner.png');
     rightEdge.current = p5.loadImage('/galleass/rightedge.png');
     leftEdge.current = p5.loadImage('/galleass/leftedge.png');
-
-    timber.current = p5.loadImage('/galleass/timber.png');
-    //console.log("timber.current",timber.current)
-
     for (let c = 0; c < 7; c++) {
       clouds.current[c] = p5.loadImage(
         '/galleass/cloud' + (c + 1) + '_smaller.png'
@@ -157,14 +153,21 @@ const CustomStyle = ({
       //console.log("LOADING",path)
       handwriting.current[path] = p5.loadImage(path);
     }
-
-
   }
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(SIZE, SIZE).parent(canvasParentRef);
-    canvasRef.current = p5;
     preload(p5);
+
+    canvasRef.current = p5;
+    attributesRef.current = () => {
+      return {
+        // This is called when the final image is generated, when creator opens the Mint NFT modal.
+        // should return an object structured following opensea/enjin metadata spec for attributes/properties
+        // https://docs.opensea.io/docs/metadata-standards
+        // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md#erc-1155-metadata-uri-json-schema
+      };
+    };
   };
 
   const draw = (p5) => {
@@ -345,8 +348,8 @@ const CustomStyle = ({
         } else {
           tileList[t] = tileRandomish % tiles.current.length;
           //console.log("=)-"+tileList[t])
-          let randomTile = tileList[t]-1
-          if(randomTile<0) randomTile=0
+          let randomTile = tileList[t] - 1;
+          if (randomTile < 0) randomTile = 0;
           if (tiles.current[randomTile]) {
             p5.image(
               tiles.current[randomTile],
@@ -360,7 +363,7 @@ const CustomStyle = ({
       }
     }
 
-    let gasUsed = block.gasUsed.hex;
+    let gasUsed = block.gasUsed._hex;
     //console.log(gasUsed, 'ok');
     let currentGasEntropyPointer = 2;
     let currentGasEntropy = keccak256(parseInt(gasUsed)).toString('hex');
@@ -499,7 +502,7 @@ const CustomStyle = ({
 
     TEXTSIZE = 64 * M;
     LETTER_SPACING = 64 * M;
-    someString = '' + block.number
+    someString = '' + block.number;
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
       //console.log("WRITINGE:",someString[l])
@@ -514,7 +517,7 @@ const CustomStyle = ({
 
     TEXTSIZE = 22 * M;
     LETTER_SPACING = 22 * M;
-    someString = '' + block.timestamp
+    someString = '' + block.timestamp;
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
       //console.log("WRITINGE:",someString[l])
@@ -527,7 +530,7 @@ const CustomStyle = ({
       );
     }
 
-    console.log(tileList)
+    //console.log(tileList)
     /*
     //given the list of rendered tiles we can do all sorts of stuff...
     // was thinking it could have a population and the population
@@ -586,40 +589,20 @@ const CustomStyle = ({
     const WARRIORSDOCK = 32;
     */
 
-    let timberInventory = 0
-    for(let t in tileList){
-      if(tileList[t]==FOREST){
+    let timber = 0;
+    for (let t in tileList) {
+      if (tileList[t] == FOREST) {
         //console.log("t",t,"FOREST")
-        timberInventory++
-      }else if(tileList[t]==TIMBERCAMP){
+        timber++;
+      } else if (tileList[t] == TIMBERCAMP) {
         //console.log("t",t,"TIMBERCAMP")
-        timberInventory+=3
-      }else if(tileList[t]==TIMBERMILL){
+        timber += 3;
+      } else if (tileList[t] == TIMBERMILL) {
         //console.log("t",t,"TIMBERMILL")
-        timberInventory+=5
+        timber += 5;
       }
     }
-
-    const ICON_WIDTH = 60
-    const ICON_HEIGHT = 40
-
-    TEXTSIZE = 64 * M;
-    LETTER_SPACING = 64 * M;
-    someString = '' + timberInventory
-    textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
-    for (let l in someString) {
-      //console.log("WRITINGE:",someString[l])
-      p5.image(
-        handwriting.current[translateChracterToPath(someString[l])],
-        textStart + (TEXTSIZE / 2) * l,
-        horizon - horizon / 3,
-        TEXTSIZE,
-        TEXTSIZE
-      );
-    }
-    p5.image(timber.current, width / 2 - ICON_WIDTH / 2 , horizon - horizon / 3 - ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
-
-    console.log("timberInventory",timberInventory)
+    //console.log("timber",timber)
 
     p5.image(topRightCorner.current, width - 400 * M, 0, 400 * M, 396 * M);
     p5.image(topLeftCorner.current, 0, 0, 400 * M, 396 * M);
