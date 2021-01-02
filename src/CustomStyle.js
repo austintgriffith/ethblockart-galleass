@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import Sketch from 'react-p5';
 import keccak256 from 'keccak256';
 
+const DEFAULT_SIZE = 1024;
 const RANDOM = false; //set this to false to start using block data instead of random
 
 const DOGGERWIDTH = 75;
@@ -45,6 +46,8 @@ const WARRIORSDOCK = 32;
 const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
   const horizon = height / 2;
   const SIZE = width;
+  let M = SIZE / DEFAULT_SIZE;
+
   const SHIPDEPTH = SIZE / 4;
 
   // if(!fakeRandomHash){
@@ -67,18 +70,18 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
 
   let possibleLetters = 'ABCDEF1234567890xaabcdef'; //<-- notice two a's in a row to load both
 
-  let sky;
-  let sea;
-  let clouds = [];
-  let oceanCover = [];
-  let doggers = [];
-  let fish = [];
-  let tiles = [];
-  let topLeftCorner;
-  let topRightCorner;
-  let rightEdge;
-  let leftEdge;
-  let handwriting = {};
+  let sky = useRef();
+  let sea = useRef();
+  let clouds = useRef([]);
+  let oceanCover = useRef([]);
+  let doggers = useRef([]);
+  let fish = useRef([]);
+  let tiles = useRef([]);
+  let topLeftCorner = useRef();
+  let topRightCorner = useRef();
+  let rightEdge = useRef();
+  let leftEdge = useRef();
+  let handwriting = useRef({});
 
   let lastChar;
   const translateChracterToPath = (character) => {
@@ -114,33 +117,37 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
   };
 
   function preload(p5) {
-    sky = p5.loadImage('galleass/sky.jpg');
-    sea = p5.loadImage('galleass/oceanblackblur.jpg');
-    topLeftCorner = p5.loadImage('galleass/topleftcorner.png');
-    topRightCorner = p5.loadImage('galleass/toprightcorner.png');
-    rightEdge = p5.loadImage('galleass/rightedge.png');
-    leftEdge = p5.loadImage('galleass/leftedge.png');
+    sky.current = p5.loadImage('galleass/sky.jpg');
+    sea.current = p5.loadImage('galleass/oceanblackblur.jpg');
+    topLeftCorner.current = p5.loadImage('galleass/topleftcorner.png');
+    topRightCorner.current = p5.loadImage('galleass/toprightcorner.png');
+    rightEdge.current = p5.loadImage('galleass/rightedge.png');
+    leftEdge.current = p5.loadImage('galleass/leftedge.png');
     for (let c = 0; c < 7; c++) {
-      clouds[c] = p5.loadImage('galleass/cloud' + (c + 1) + '_smaller.png');
+      clouds.current[c] = p5.loadImage(
+        'galleass/cloud' + (c + 1) + '_smaller.png'
+      );
     }
     for (let c = 0; c < 4; c++) {
-      oceanCover[c] = p5.loadImage('galleass/oceancover' + (c + 1) + '.png');
+      oceanCover.current[c] = p5.loadImage(
+        'galleass/oceancover' + (c + 1) + '.png'
+      );
     }
 
     for (let c = 0; c < 6; c++) {
-      doggers[c] = p5.loadImage('galleass/dogger' + (c + 1) + '.png');
+      doggers.current[c] = p5.loadImage('galleass/dogger' + (c + 1) + '.png');
     }
     for (let c = 0; c < 10; c++) {
-      fish[c] = p5.loadImage('galleass/fish' + (c + 1) + '.png');
+      fish.current[c] = p5.loadImage('galleass/fish' + (c + 1) + '.png');
     }
     for (let c = 0; c < 32; c++) {
-      tiles[c] = p5.loadImage('galleass/tile' + (c + 1) + '.png');
+      tiles.current[c] = p5.loadImage('galleass/tile' + (c + 1) + '.png');
     }
 
     for (let l in possibleLetters) {
       let path = translateChracterToPath(possibleLetters[l]);
       //console.log("LOADING",path)
-      handwriting[path] = p5.loadImage(path);
+      handwriting.current[path] = p5.loadImage(path);
     }
   }
 
@@ -174,14 +181,14 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
     let possibleOffset = 4000 - SIZE;
 
     p5.image(
-      sky,
+      sky.current,
       0 - (possibleOffset * takeTwoBytesOfEntropy()) / 65535,
       0,
       4000,
       SIZE / 2
     );
     p5.image(
-      sea,
+      sea.current,
       0 - (possibleOffset * takeTwoBytesOfEntropy()) / 65535,
       SIZE / 2,
       4000,
@@ -210,7 +217,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       else {
         //top+= (height-horizon)*take2BytesOfEntropy()/65535;
       }
-      p5.image(clouds[c - 1], location, top, cloudwidth, cloudheight);
+      p5.image(clouds.current[c - 1], location, top, cloudwidth, cloudheight);
     }
 
     let landHorizon = horizon - 64;
@@ -223,7 +230,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       const tileRandomish = takeTwoBytesOfEntropy();
       if (underwater) {
         if (tileRandomish > 40000 && t < 10) {
-          p5.image(leftEdge, t * 87, landHorizon, 87, 125);
+          p5.image(leftEdge.current, t * 87, landHorizon, 87, 125);
           underwater = false;
         }
       } else {
@@ -255,32 +262,64 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
           underwater = true;
           tileList[t] = 0;
           //console.log("=)rightedge")
-          p5.image(rightEdge, t * 87, landHorizon, 87, 125);
+          p5.image(rightEdge.current, t * 87, landHorizon, 87, 125);
         } else if (tileRandomish > 20000) {
           tileList[t] = commonTiles[tileRandomish % commonTiles.length];
           //console.log("=)-"+tileList[t])
-          p5.image(tiles[tileList[t] - 1], t * 87, landHorizon, 87, 125);
+          p5.image(
+            tiles.current[tileList[t] - 1],
+            t * 87,
+            landHorizon,
+            87,
+            125
+          );
         } else if (tileRandomish > 15000) {
           tileList[t] =
             exoticResourceTiles[tileRandomish % exoticResourceTiles.length];
           //console.log("=)-"+tileList[t])
-          p5.image(tiles[tileList[t] - 1], t * 87, landHorizon, 87, 125);
+          p5.image(
+            tiles.current[tileList[t] - 1],
+            t * 87,
+            landHorizon,
+            87,
+            125
+          );
         } else if (tileRandomish > 10000) {
           tileList[t] = settlersTiles[tileRandomish % settlersTiles.length];
           //console.log("=)-"+tileList[t])
-          p5.image(tiles[tileList[t] - 1], t * 87, landHorizon, 87, 125);
+          p5.image(
+            tiles.current[tileList[t] - 1],
+            t * 87,
+            landHorizon,
+            87,
+            125
+          );
         } else if (tileRandomish > 8000) {
           tileList[t] = villageTiles[tileRandomish % villageTiles.length];
           //console.log("=)-"+tileList[t])
-          p5.image(tiles[tileList[t] - 1], t * 87, landHorizon, 87, 125);
+          p5.image(
+            tiles.current[tileList[t] - 1],
+            t * 87,
+            landHorizon,
+            87,
+            125
+          );
         } else if (tileRandomish > 7000) {
           tileList[t] = castleTiles[tileRandomish % castleTiles.length];
           //console.log("=)-"+tileList[t])
-          p5.image(tiles[tileList[t] - 1], t * 87, landHorizon, 87, 125);
+          p5.image(
+            tiles.current[tileList[t] - 1],
+            t * 87,
+            landHorizon,
+            87,
+            125
+          );
         } else {
           tileList[t] = tileRandomish % tiles.length;
           //console.log("=)-"+tileList[t])
-          p5.image(tiles[tileList[t]], t * 87, landHorizon, 87, 125);
+          if (tiles.current[tileList[t]]) {
+            p5.image(tiles.current[tileList[t]], t * 87, landHorizon, 87, 125);
+          }
         }
       }
     }
@@ -328,7 +367,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       }
 
       orderedFish.push([
-        fish[fishType],
+        fish.current[fishType],
         (width * getGasEntropy()) / 65535,
         height - ((SIZE / 4) * getGasEntropy()) / 65535,
         64,
@@ -367,7 +406,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
         //top+= (height-horizon)*take2BytesOfEntropy()/65535;
       }
       p5.image(
-        oceanCover[c - 1],
+        oceanCover.current[c - 1],
         location,
         height - cloudheight,
         cloudwidth * 2,
@@ -375,34 +414,34 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       );
     }
 
-    let orderedShips = [];
-    for (let t in block.transactions) {
-      const transaction = block.transactions[t];
-      let currentTransactionEntropyPointer = 2;
-      const takeOneByteOfTransactionEntropy = () => {
-        let byte =
-          transaction[currentTransactionEntropyPointer++] +
-          transaction[currentTransactionEntropyPointer++];
-        byte = parseInt(byte, 16);
-        if (!RANDOM) return byte;
-        return Math.random() * 256;
-      };
-      orderedShips.push([
-        doggers[takeOneByteOfTransactionEntropy() % doggers.length],
-        (width * takeOneByteOfTransactionEntropy()) / 255,
-        horizon + 32 + (SHIPDEPTH * takeOneByteOfTransactionEntropy()) / 256,
-        DOGGERWIDTH,
-        DOGGERWIDTH * 0.9,
-      ]);
-    }
+    // let orderedShips = [];
+    // for (let t in block.transactions) {
+    //   const transaction = block.transactions[t];
+    //   let currentTransactionEntropyPointer = 2;
+    //   const takeOneByteOfTransactionEntropy = () => {
+    //     let byte =
+    //       transaction[currentTransactionEntropyPointer++] +
+    //       transaction[currentTransactionEntropyPointer++];
+    //     byte = parseInt(byte, 16);
+    //     if (!RANDOM) return byte;
+    //     return Math.random() * 256;
+    //   };
+    //   orderedShips.push([
+    //     doggers.current[takeOneByteOfTransactionEntropy() % doggers.length],
+    //     (width * takeOneByteOfTransactionEntropy()) / 255,
+    //     horizon + 32 + (SHIPDEPTH * takeOneByteOfTransactionEntropy()) / 256,
+    //     DOGGERWIDTH,
+    //     DOGGERWIDTH * 0.9,
+    //   ]);
+    // }
 
-    orderedShips.sort((a, b) => {
-      return a[2] - b[2];
-    });
+    // orderedShips.sort((a, b) => {
+    //   return a[2] - b[2];
+    // });
 
-    for (let s in orderedShips) {
-      p5.image(...orderedShips[s]);
-    }
+    // for (let s in orderedShips) {
+    //   p5.image(...orderedShips[s]);
+    // }
 
     let TEXTSIZE = 32;
     let LETTER_SPACING = 32;
@@ -412,7 +451,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
     for (let l in someString) {
       //console.log("WRITINGE:",someString[l])
       p5.image(
-        handwriting[translateChracterToPath(someString[l])],
+        handwriting.current[translateChracterToPath(someString[l])],
         textStart + (TEXTSIZE / 2) * l,
         horizon / 5,
         TEXTSIZE,
@@ -427,7 +466,7 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
     for (let l in someString) {
       //console.log("WRITINGE:",someString[l])
       p5.image(
-        handwriting[translateChracterToPath(someString[l])],
+        handwriting.current[translateChracterToPath(someString[l])],
         textStart + (TEXTSIZE / 2) * l,
         horizon / 12,
         TEXTSIZE,
@@ -435,14 +474,14 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
       );
     }
 
-    TEXTSIZE = 32;
+    TEXTSIZE = 32 * M;
     LETTER_SPACING = 32;
     someString = '' + parseInt(block.timestamp, 16);
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
       //console.log("WRITINGE:",someString[l])
       p5.image(
-        handwriting[translateChracterToPath(someString[l])],
+        handwriting.current[translateChracterToPath(someString[l])],
         textStart + (TEXTSIZE / 2) * l,
         horizon / 3.77,
         TEXTSIZE,
@@ -475,8 +514,8 @@ const CustomStyle = ({ block, handleResize, width, height, canvasRef }) => {
     }
     */
 
-    p5.image(topRightCorner, width - 400, 0, 400, 396);
-    p5.image(topLeftCorner, 0, 0, 400, 396);
+    p5.image(topRightCorner.current, width - 400 * M, 0, 400 * M, 396 * M);
+    p5.image(topLeftCorner.current, 0, 0, 400 * M, 396 * M);
   };
 
   return (
