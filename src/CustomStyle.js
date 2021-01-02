@@ -338,9 +338,11 @@ const CustomStyle = ({
         } else {
           tileList[t] = tileRandomish % tiles.current.length;
           //console.log("=)-"+tileList[t])
-          if (tiles.current[tileList[t]]) {
+          let randomTile = tileList[t]-1
+          if(randomTile<0) randomTile=0
+          if (tiles.current[randomTile]) {
             p5.image(
-              tiles.current[tileList[t]],
+              tiles.current[randomTile],
               t * tileWidth,
               landHorizon,
               tileWidth,
@@ -542,7 +544,55 @@ const CustomStyle = ({
       let populationsAtWork = populationBonus(tileList[t])
       //if(populationsAtWork>0) console.log("There is a population of "+populationsAtWork+" at tile "+t+"...")
     }
+
+    const FOREST = 1;
+    const GRASS = 2;
+    const DOCK = 3;
+    const MOREGRASS = 4;
+    const RIVER = 5;
+    const EVENMOREGRASS = 6;
+    const SETTLERSDOCK = 7;
+    const COPPERMTN = 8;
+    const CORN = 9;
+    const DEADGRASS = 10;
+    const SETTLERS = 11;
+    const DEADMTN = 12;
+    const MOREDEADGRASS = 13;
+    const DEADTIMBER = 14;
+    const MOREMOREDEADGRASS = 15;
+    const MOREDEADMTN = 16;
+    const FISHMONGER = 17;
+    const COURTHOUSE = 18;
+    const MOREMOREMOREDEADGRASS = 19;
+    const HARBOR = 20;
+    const MARKET = 21;
+    const TIMBERMILL = 22;
+    const MININGCAMP = 23;
+    const MININGSHAFT = 24;
+    const MTN = 25;
+    const SILVERMTNCAMP = 26;
+    const SILVERMTN = 27;
+    const TIMBERCAMP = 28;
+    const VILLAGERS = 29;
+    const VILLAGERSDOCK = 30;
+    const WARRIORS = 31;
+    const WARRIORSDOCK = 32;
     */
+
+    let timber = 0
+    for(let t in tileList){
+      if(tileList[t]==FOREST){
+        //console.log("t",t,"FOREST")
+        timber++
+      }else if(tileList[t]==TIMBERCAMP){
+        //console.log("t",t,"TIMBERCAMP")
+        timber+=3
+      }else if(tileList[t]==TIMBERMILL){
+        //console.log("t",t,"TIMBERMILL")
+        timber+=5
+      }
+    }
+    //console.log("timber",timber)
 
     p5.image(topRightCorner.current, width - 400 * M, 0, 400 * M, 396 * M);
     p5.image(topLeftCorner.current, 0, 0, 400 * M, 396 * M);
