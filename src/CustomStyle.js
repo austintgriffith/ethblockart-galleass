@@ -351,7 +351,7 @@ const CustomStyle = ({
       }
     }
 
-    let gasUsed = block.gasUsed;
+    let gasUsed = block.gasUsed.hex;
     //console.log(gasUsed, 'ok');
     let currentGasEntropyPointer = 2;
     let currentGasEntropy = keccak256(parseInt(gasUsed)).toString('hex');
@@ -550,7 +550,6 @@ const CustomStyle = ({
 
   return (
     <Sketch
-      key={block.number}
       setup={setup}
       draw={draw}
       // preload={preload}
