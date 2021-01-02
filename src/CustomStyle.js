@@ -43,7 +43,14 @@ const VILLAGERSDOCK = 30;
 const WARRIORS = 31;
 const WARRIORSDOCK = 32;
 
-const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canvasRef }) => {
+const CustomStyle = ({
+  fakeRandomHash,
+  block,
+  handleResize,
+  width,
+  height,
+  canvasRef,
+}) => {
   const horizon = height / 2;
   const SIZE = width;
   let M = SIZE / DEFAULT_SIZE;
@@ -52,7 +59,6 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
 
   //const hash = fakeRandomHash
   const { hash } = block;
-
 
   let cloudSizes = [
     [400, 152],
@@ -82,7 +88,7 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
 
   let lastChar;
   const translateChracterToPath = (character) => {
-    let image = 'galleass/handwritten/';
+    let image = '/galleass/handwritten/';
 
     if (character == '#') {
       image = character + '.png';
@@ -114,31 +120,31 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
   };
 
   function preload(p5) {
-    sky.current = p5.loadImage('galleass/sky.jpg');
-    sea.current = p5.loadImage('galleass/oceanblackblur.jpg');
-    topLeftCorner.current = p5.loadImage('galleass/topleftcorner.png');
-    topRightCorner.current = p5.loadImage('galleass/toprightcorner.png');
-    rightEdge.current = p5.loadImage('galleass/rightedge.png');
-    leftEdge.current = p5.loadImage('galleass/leftedge.png');
+    sky.current = p5.loadImage('/galleass/sky.jpg');
+    sea.current = p5.loadImage('/galleass/oceanblackblur.jpg');
+    topLeftCorner.current = p5.loadImage('/galleass/topleftcorner.png');
+    topRightCorner.current = p5.loadImage('/galleass/toprightcorner.png');
+    rightEdge.current = p5.loadImage('/galleass/rightedge.png');
+    leftEdge.current = p5.loadImage('/galleass/leftedge.png');
     for (let c = 0; c < 7; c++) {
       clouds.current[c] = p5.loadImage(
-        'galleass/cloud' + (c + 1) + '_smaller.png'
+        '/galleass/cloud' + (c + 1) + '_smaller.png'
       );
     }
     for (let c = 0; c < 4; c++) {
       oceanCover.current[c] = p5.loadImage(
-        'galleass/oceancover' + (c + 1) + '.png'
+        '/galleass/oceancover' + (c + 1) + '.png'
       );
     }
 
     for (let c = 0; c < 6; c++) {
-      doggers.current[c] = p5.loadImage('galleass/dogger' + (c + 1) + '.png');
+      doggers.current[c] = p5.loadImage('/galleass/dogger' + (c + 1) + '.png');
     }
     for (let c = 0; c < 10; c++) {
-      fish.current[c] = p5.loadImage('galleass/fish' + (c + 1) + '.png');
+      fish.current[c] = p5.loadImage('/galleass/fish' + (c + 1) + '.png');
     }
     for (let c = 0; c < 32; c++) {
-      tiles.current[c] = p5.loadImage('galleass/tile' + (c + 1) + '.png');
+      tiles.current[c] = p5.loadImage('/galleass/tile' + (c + 1) + '.png');
     }
 
     for (let l in possibleLetters) {
@@ -151,6 +157,7 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(SIZE, SIZE).parent(canvasParentRef);
     canvasRef.current = p5;
+    preload(p5);
   };
 
   const draw = (p5) => {
@@ -186,7 +193,6 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
       SIZE / 2
     );
 
-
     p5.image(
       sea.current,
       0 - (possibleOffset * takeTwoBytesOfEntropy()) / 65535,
@@ -194,7 +200,6 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
       4000,
       SIZE / 2
     );
-
 
     for (let c = 1; c < 8; c++) {
       let blocksTraveled = 0;
@@ -204,8 +209,8 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
 
       let location = startingLocation + blocksTraveled * speed;
       let cloudSize = cloudSizes[c - 1];
-      let cloudwidth = cloudSize[0]*M;
-      let cloudheight = cloudSize[1]*M;
+      let cloudwidth = cloudSize[0] * M;
+      let cloudheight = cloudSize[1] * M;
       location = width * (location / 65535);
       while (location > width) {
         location -= width + cloudwidth;
@@ -221,20 +226,26 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
       p5.image(clouds.current[c - 1], location, top, cloudwidth, cloudheight);
     }
 
-    let landHorizon = horizon - 45*M;
+    let landHorizon = horizon - 45 * M;
 
     let underwater = true;
 
     let tileList = [];
 
-    let tileWidth = 64 * M
-    let tileHeight = 100 * M
+    let tileWidth = 64 * M;
+    let tileHeight = 100 * M;
 
     for (let t = 0; t < 16; t++) {
       const tileRandomish = takeTwoBytesOfEntropy();
       if (underwater) {
         if (tileRandomish > 40000 && t < 10) {
-          p5.image(leftEdge.current, t * tileWidth, landHorizon, tileWidth, tileHeight);
+          p5.image(
+            leftEdge.current,
+            t * tileWidth,
+            landHorizon,
+            tileWidth,
+            tileHeight
+          );
           underwater = false;
         }
       } else {
@@ -266,7 +277,13 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
           underwater = true;
           tileList[t] = 0;
           //console.log("=)rightedge")
-          p5.image(rightEdge.current, t * tileWidth, landHorizon, tileWidth, tileHeight);
+          p5.image(
+            rightEdge.current,
+            t * tileWidth,
+            landHorizon,
+            tileWidth,
+            tileHeight
+          );
         } else if (tileRandomish > 20000) {
           tileList[t] = commonTiles[tileRandomish % commonTiles.length];
           //console.log("=)-"+tileList[t])
@@ -322,7 +339,13 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
           tileList[t] = tileRandomish % tiles.current.length;
           //console.log("=)-"+tileList[t])
           if (tiles.current[tileList[t]]) {
-            p5.image(tiles.current[tileList[t]], t * tileWidth, landHorizon, tileWidth, tileHeight);
+            p5.image(
+              tiles.current[tileList[t]],
+              t * tileWidth,
+              landHorizon,
+              tileWidth,
+              tileHeight
+            );
           }
         }
       }
@@ -374,8 +397,8 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
         fish.current[fishType],
         (width * getGasEntropy()) / 65535,
         height - ((SIZE / 4) * getGasEntropy()) / 65535,
-        64*M,
-        32*M,
+        64 * M,
+        32 * M,
       ]);
     }
 
@@ -395,8 +418,8 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
 
       let location = startingLocation + blocksTraveled * speed;
       let cloudSize = cloudSizes[c - 1];
-      let cloudwidth = cloudSize[0]*M;
-      let cloudheight = cloudSize[1]*M;
+      let cloudwidth = cloudSize[0] * M;
+      let cloudheight = cloudSize[1] * M;
       location = SIZE * (location / 65535);
       while (location > width) {
         location -= width + cloudwidth;
@@ -431,11 +454,13 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
         return Math.random() * 256;
       };
       orderedShips.push([
-        doggers.current[takeOneByteOfTransactionEntropy() % doggers.current.length],
-        ((width * takeOneByteOfTransactionEntropy()) / 255)-DOGGERWIDTH/2,
+        doggers.current[
+          takeOneByteOfTransactionEntropy() % doggers.current.length
+        ],
+        (width * takeOneByteOfTransactionEntropy()) / 255 - DOGGERWIDTH / 2,
         horizon + 32 + (SHIPDEPTH * takeOneByteOfTransactionEntropy()) / 256,
         DOGGERWIDTH * 0.777 * M,
-        DOGGERWIDTH * 0.777* 0.9 *M,
+        DOGGERWIDTH * 0.777 * 0.9 * M,
       ]);
     }
 
@@ -463,8 +488,8 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
       );
     }
 
-    TEXTSIZE = 64  * M;
-    LETTER_SPACING = 64  * M;
+    TEXTSIZE = 64 * M;
+    LETTER_SPACING = 64 * M;
     someString = '' + parseInt(block.number, 16);
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
@@ -479,7 +504,7 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
     }
 
     TEXTSIZE = 22 * M;
-    LETTER_SPACING = 22  * M;
+    LETTER_SPACING = 22 * M;
     someString = '' + parseInt(block.timestamp, 16);
     textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
     for (let l in someString) {
@@ -492,7 +517,6 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
         TEXTSIZE
       );
     }
-
 
     //console.log(tileList)
     /*
@@ -529,7 +553,7 @@ const CustomStyle = ({ fakeRandomHash, block, handleResize, width, height, canva
       key={block.number}
       setup={setup}
       draw={draw}
-      preload={preload}
+      // preload={preload}
       windowResized={handleResize}
     />
   );
