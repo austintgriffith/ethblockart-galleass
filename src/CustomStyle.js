@@ -57,8 +57,8 @@ const CustomStyle = ({
 
   const SHIPDEPTH = SIZE / 4;
 
-  //const hash = fakeRandomHash
-  const { hash } = block;
+  const hash = fakeRandomHash
+  //const { hash } = block;
 
   let cloudSizes = [
     [400, 152],
@@ -79,6 +79,7 @@ const CustomStyle = ({
   let doggers = useRef([]);
   let fish = useRef([]);
   let tiles = useRef([]);
+  let timber = useRef();
 
   let topLeftCorner = useRef();
   let topRightCorner = useRef();
@@ -126,6 +127,10 @@ const CustomStyle = ({
     topRightCorner.current = p5.loadImage('/galleass/toprightcorner.png');
     rightEdge.current = p5.loadImage('/galleass/rightedge.png');
     leftEdge.current = p5.loadImage('/galleass/leftedge.png');
+
+    timber.current = p5.loadImage('/galleass/timber.png');
+    //console.log("timber.current",timber.current)
+
     for (let c = 0; c < 7; c++) {
       clouds.current[c] = p5.loadImage(
         '/galleass/cloud' + (c + 1) + '_smaller.png'
@@ -152,6 +157,8 @@ const CustomStyle = ({
       //console.log("LOADING",path)
       handwriting.current[path] = p5.loadImage(path);
     }
+
+
   }
 
   const setup = (p5, canvasParentRef) => {
@@ -520,7 +527,7 @@ const CustomStyle = ({
       );
     }
 
-    //console.log(tileList)
+    console.log(tileList)
     /*
     //given the list of rendered tiles we can do all sorts of stuff...
     // was thinking it could have a population and the population
@@ -579,20 +586,40 @@ const CustomStyle = ({
     const WARRIORSDOCK = 32;
     */
 
-    let timber = 0
+    let timberInventory = 0
     for(let t in tileList){
       if(tileList[t]==FOREST){
         //console.log("t",t,"FOREST")
-        timber++
+        timberInventory++
       }else if(tileList[t]==TIMBERCAMP){
         //console.log("t",t,"TIMBERCAMP")
-        timber+=3
+        timberInventory+=3
       }else if(tileList[t]==TIMBERMILL){
         //console.log("t",t,"TIMBERMILL")
-        timber+=5
+        timberInventory+=5
       }
     }
-    //console.log("timber",timber)
+
+    const ICON_WIDTH = 60
+    const ICON_HEIGHT = 40
+
+    TEXTSIZE = 64 * M;
+    LETTER_SPACING = 64 * M;
+    someString = '' + timberInventory
+    textStart = width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4;
+    for (let l in someString) {
+      //console.log("WRITINGE:",someString[l])
+      p5.image(
+        handwriting.current[translateChracterToPath(someString[l])],
+        textStart + (TEXTSIZE / 2) * l,
+        horizon - horizon / 3,
+        TEXTSIZE,
+        TEXTSIZE
+      );
+    }
+    p5.image(timber.current, width / 2 - ICON_WIDTH / 2 , horizon - horizon / 3 - ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
+
+    console.log("timberInventory",timberInventory)
 
     p5.image(topRightCorner.current, width - 400 * M, 0, 400 * M, 396 * M);
     p5.image(topLeftCorner.current, 0, 0, 400 * M, 396 * M);
