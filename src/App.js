@@ -17,6 +17,7 @@ function App() {
   As a creative coder you can ignore this file, check CustomStyle.js
 */
   const canvasRef = useRef();
+  const attributesRef = useRef();
   const { ref, width, height } = useDimensions({});
   const _onCanvasResize = (p5) => {
     p5.resizeCanvas(width, height);
@@ -39,6 +40,7 @@ function App() {
           block={blocks[0]}
           height={height}
           canvasRef={canvasRef}
+          attributesRef={attributesRef}
           handleResize={_onCanvasResize}
           fakeRandomHash={fakeRandomHash}
         />
