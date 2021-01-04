@@ -37,7 +37,7 @@ function App() {
       {width && height ? (
         <CustomStyle
           width={width}
-          block={blocks[0]}
+          block={blocks[1]}
           height={height}
           canvasRef={canvasRef}
           attributesRef={attributesRef}

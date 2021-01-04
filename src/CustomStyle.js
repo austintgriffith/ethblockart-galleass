@@ -374,6 +374,8 @@ const CustomStyle = ({
       }
     }
 
+
+
     let gasUsed = block.gasUsed._hex;
     //console.log(gasUsed, 'ok');
     let currentGasEntropyPointer = 2;
@@ -673,20 +675,15 @@ const CustomStyle = ({
 
 
 
-    //if(inventory[timber]%2==1){
-      //drawInv(stoneInventory,,stone.current)
-    //}else{
-      console.log("inventoryCount",inventoryCount)
-      let extraOffset = 0
-      if(inventoryCount%2==1) extraOffset = TOTAL_INV_SPACING/2
-      let count = 0
-      for(let i in inventory){
-        console.log("Drawing ",i,inventory[i])
-        let offset = ((TOTAL_INV_SPACING) * ++count) - (inventoryCount * TOTAL_INV_SPACING/2) - TOTAL_INV_SPACING/2
-        drawInv(inventory[i].amount,offset,inventory[i].image)
-      }
-    //}
-
+    //console.log("inventoryCount",inventoryCount)
+    let extraOffset = 0
+    if(inventoryCount%2==1) extraOffset = TOTAL_INV_SPACING/2
+    let count = 0
+    for(let i in inventory){
+      //console.log("Drawing ",i,inventory[i])
+      let offset = ((TOTAL_INV_SPACING) * ++count) - (inventoryCount * TOTAL_INV_SPACING/2) - TOTAL_INV_SPACING/2
+      drawInv(inventory[i].amount,offset,inventory[i].image)
+    }
 
 
 
