@@ -376,7 +376,7 @@ const CustomStyle = ({
 
 
 
-    let gasUsed = block.gasUsed._hex;
+    let gasUsed = block.gasUsed._hex || block.gasUsed.hex;
     //console.log(gasUsed, 'ok');
     let currentGasEntropyPointer = 2;
     let currentGasEntropy = keccak256(parseInt(gasUsed)).toString('hex');
@@ -652,13 +652,13 @@ const CustomStyle = ({
       }
     }
 
-    const ICON_WIDTH = 60;
-    const ICON_HEIGHT = 40;
+    const ICON_WIDTH = 60 * M;
+    const ICON_HEIGHT = 40 * M;
 
     TEXTSIZE = 64 * M;
     LETTER_SPACING = 64 * M;
 
-    const TOTAL_INV_SPACING = 130;
+    const TOTAL_INV_SPACING = 130 * M;
 
     const drawInv = (amount, offset, image) => {
       someString = '' + amount;
