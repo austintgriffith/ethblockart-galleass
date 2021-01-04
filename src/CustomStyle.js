@@ -129,12 +129,12 @@ const CustomStyle = ({
     rightEdge.current = p5.loadImage('/galleass/rightedge.png');
     leftEdge.current = p5.loadImage('/galleass/leftedge.png');
 
-    inventoryImages.current["greens"] = p5.loadImage('/galleass/greens.png')
-    inventoryImages.current["fillet"] = p5.loadImage('/galleass/fillet.png')
-    inventoryImages.current["timber"] = p5.loadImage('/galleass/timber.png')
-    inventoryImages.current["stone"] = p5.loadImage('/galleass/stone.png')
-    inventoryImages.current["copper"] = p5.loadImage('/galleass/copper.png')
-    inventoryImages.current["silver"] = p5.loadImage('/galleass/silver.png')
+    inventoryImages.current['greens'] = p5.loadImage('/galleass/greens.png');
+    inventoryImages.current['fillet'] = p5.loadImage('/galleass/fillet.png');
+    inventoryImages.current['timber'] = p5.loadImage('/galleass/timber.png');
+    inventoryImages.current['stone'] = p5.loadImage('/galleass/stone.png');
+    inventoryImages.current['copper'] = p5.loadImage('/galleass/copper.png');
+    inventoryImages.current['silver'] = p5.loadImage('/galleass/silver.png');
 
     //console.log("timber.current",timber.current)
 
@@ -472,8 +472,8 @@ const CustomStyle = ({
       let currentTransactionEntropyPointer = 2;
       const takeOneByteOfTransactionEntropy = () => {
         let byte =
-          transaction[currentTransactionEntropyPointer++] +
-          transaction[currentTransactionEntropyPointer++];
+          transaction.hash[currentTransactionEntropyPointer++] +
+          transaction.hash[currentTransactionEntropyPointer++];
         byte = parseInt(byte, 16);
         if (!RANDOM) return byte;
         return Math.random() * 256;
@@ -570,96 +570,100 @@ const CustomStyle = ({
 
     */
 
-    let inventory = {}
-    let inventoryCount = 0
+    let inventory = {};
+    let inventoryCount = 0;
 
-    const addInventory = (name,amount)=>{
-      if(!inventory[name]) {
+    const addInventory = (name, amount) => {
+      if (!inventory[name]) {
         inventory[name] = {
           amount: 0,
-          image: inventoryImages.current[name]
+          image: inventoryImages.current[name],
+        };
+        inventoryCount++;
+      }
+      inventory[name].amount += amount;
+    };
+
+    for (let t in tileList) {
+      if (tileList[t] == FOREST) {
+        addInventory('timber', 1);
+      } else if (tileList[t] == TIMBERCAMP) {
+        addInventory('timber', 3);
+      } else if (tileList[t] == TIMBERMILL) {
+        addInventory('timber', 5);
+      }
+    }
+
+    for (let t in tileList) {
+      if (tileList[t] == MTN) {
+        addInventory('stone', 1);
+      } else if (tileList[t] == MININGCAMP) {
+        addInventory('stone', 3);
+      } else if (tileList[t] == MININGSHAFT) {
+        addInventory('stone', 5);
+      }
+    }
+
+    for (let t in tileList) {
+      if (
+        tileList[t] == GRASS ||
+        tileList[t] == EVENMOREGRASS ||
+        tileList[t] == MOREGRASS ||
+        tileList[t] == DOCK
+      ) {
+        addInventory('greens', 1);
+      }
+    }
+
+    for (let t in tileList) {
+      if (tileList[t] == COPPERMTN) {
+        addInventory('copper', 3);
+      } else if (tileList[t] == COPPERMTNCAMP) {
+        addInventory('copper', 5);
+      }
+    }
+
+    for (let t in tileList) {
+      if (tileList[t] == SILVERMTN) {
+        addInventory('silver', 3);
+      } else if (tileList[t] == SILVERMTN) {
+        addInventory('SILVERMTNCAMP', 5);
+      }
+    }
+
+    for (let t in tileList) {
+      if (tileList[t] == SETTLERS) {
+        addInventory('fillet', 1);
+      } else if (tileList[t] == VILLAGERS) {
+        addInventory('fillet', 3);
+      } else if (tileList[t] == SETTLERSDOCK) {
+        addInventory('fillet', 2);
+      } else if (tileList[t] == VILLAGERSDOCK) {
+        addInventory('fillet', 5);
+      }
+    }
+
+    for (let t in tileList) {
+      if (tileList[t] == RIVER) {
+        for (let i in inventory) {
+          console.log('inventory', i, inventory);
+          inventory[i].amount = Math.floor(inventory[i].amount * 1.5);
         }
-        inventoryCount++
-      }
-      inventory[name].amount += amount
-    }
-
-    for(let t in tileList){
-      if(tileList[t]==FOREST){
-        addInventory("timber",1)
-      }else if(tileList[t]==TIMBERCAMP){
-        addInventory("timber",3)
-      }else if(tileList[t]==TIMBERMILL){
-        addInventory("timber",5)
       }
     }
 
-    for(let t in tileList){
-      if(tileList[t]==MTN){
-        addInventory("stone",1)
-      }else if(tileList[t]==MININGCAMP){
-        addInventory("stone",3)
-      }else if(tileList[t]==MININGSHAFT){
-        addInventory("stone",5)
-      }
-    }
-
-    for(let t in tileList){
-      if(tileList[t]==GRASS || tileList[t]==EVENMOREGRASS || tileList[t]==MOREGRASS || tileList[t]==DOCK ){
-        addInventory("greens",1)
-      }
-    }
-
-    for(let t in tileList){
-      if(tileList[t]==COPPERMTN ){
-        addInventory("copper", 3)
-      }else if(tileList[t]==COPPERMTNCAMP ){
-        addInventory("copper", 5)
-      }
-    }
-
-    for(let t in tileList){
-      if(tileList[t]==SILVERMTN ){
-        addInventory("silver", 3)
-      }else if(tileList[t]==SILVERMTN ){
-        addInventory("SILVERMTNCAMP", 5)
-      }
-    }
-
-    for(let t in tileList){
-      if(tileList[t]==SETTLERS ){
-        addInventory("fillet", 1)
-      }else if(tileList[t]==VILLAGERS ){
-        addInventory("fillet", 3)
-      }else if(tileList[t]==SETTLERSDOCK ){
-        addInventory("fillet", 2)
-      }else if(tileList[t]==VILLAGERSDOCK ){
-        addInventory("fillet", 5)
-      }
-    }
-
-
-    for(let t in tileList){
-      if( tileList[t]==RIVER ){
-        for(let i in inventory){
-          console.log("inventory",i,inventory)
-          inventory[i].amount = Math.floor(inventory[i].amount*1.5)
-        }
-      }
-    }
-
-
-    const ICON_WIDTH = 60
-    const ICON_HEIGHT = 40
+    const ICON_WIDTH = 60;
+    const ICON_HEIGHT = 40;
 
     TEXTSIZE = 64 * M;
     LETTER_SPACING = 64 * M;
 
-    const TOTAL_INV_SPACING=130
+    const TOTAL_INV_SPACING = 130;
 
-    const drawInv = (amount,offset,image)=>{
-      someString = '' + amount
-      textStart =  width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4 + offset
+    const drawInv = (amount, offset, image) => {
+      someString = '' + amount;
+      textStart =
+        width / 2 - (someString.length * TEXTSIZE) / 4 - TEXTSIZE / 4 + offset;
       for (let l in someString) {
         //console.log("WRITINGE:",someString[l])
         p5.image(
@@ -670,10 +674,14 @@ const CustomStyle = ({
           TEXTSIZE
         );
       }
-      p5.image(image, width / 2 - ICON_WIDTH / 2 + offset , horizon - horizon / 3 - ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
-    }
-
-
+      p5.image(
+        image,
+        width / 2 - ICON_WIDTH / 2 + offset,
+        horizon - horizon / 3 - ICON_HEIGHT,
+        ICON_WIDTH,
+        ICON_HEIGHT
+      );
+    };
 
     //console.log("inventoryCount",inventoryCount)
     let extraOffset = 0
