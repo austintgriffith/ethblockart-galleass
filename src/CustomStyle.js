@@ -4,9 +4,9 @@ import Sketch from 'react-p5';
 import keccak256 from 'keccak256';
 
 /*
-title
-description
-thumbnail image:
+title: Galleass
+description: Deterministic generative blockchain art in the Age of Sail.
+thumbnail image: https://austingriffith.com/images/galleassart.jpg
 creator name: Austin Griffith
 */
 
@@ -98,6 +98,8 @@ const CustomStyle = ({
   let leftEdge = useRef();
   let handwriting = useRef({});
 
+  let attributes = useRef({});
+
   let lastChar;
   const translateChracterToPath = (character) => {
     let image = '/galleass/handwritten/';
@@ -183,10 +185,7 @@ const CustomStyle = ({
     canvasRef.current = p5;
     attributesRef.current = () => {
       return {
-        // This is called when the final image is generated, when creator opens the Mint NFT modal.
-        // should return an object structured following opensea/enjin metadata spec for attributes/properties
-        // https://docs.opensea.io/docs/metadata-standards
-        // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md#erc-1155-metadata-uri-json-schema
+        attributes: attributes,
       };
     };
   };
@@ -716,14 +715,24 @@ const CustomStyle = ({
 
     //console.log("inventoryCount",inventoryCount)
     let extraOffset = 0
+    let attributeUpdate = []
     if(inventoryCount%2==1) extraOffset = TOTAL_INV_SPACING/2
     let count = 0
     for(let i in inventory){
       //console.log("Drawing ",i,inventory[i])
       let offset = ((TOTAL_INV_SPACING) * ++count) - (inventoryCount * TOTAL_INV_SPACING/2) - TOTAL_INV_SPACING/2
       drawInv(inventory[i].amount,offset,inventory[i].image)
+      attributeUpdate.push(
+        {
+          display_type: 'number',
+          trait_type: i,
+          value: inventory[i].amount
+        }
+      )
     }
 
+    console.log("ATTRIBUTES",attributeUpdate)
+    attributes = attributeUpdate
 
 
 
