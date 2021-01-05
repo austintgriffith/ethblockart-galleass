@@ -68,8 +68,8 @@ const CustomStyle = ({
 
   const SHIPDEPTH = SIZE / 4;
 
-  const hash = fakeRandomHash
-  //const { hash } = block;
+  //const hash = fakeRandomHash
+  const { hash } = block;
 
   let cloudSizes = [
     [400, 152],
