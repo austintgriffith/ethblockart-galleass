@@ -3,6 +3,15 @@ import React, { useRef, useState } from 'react';
 import Sketch from 'react-p5';
 import keccak256 from 'keccak256';
 
+/*
+title
+description
+thumbnail image:
+creator name: Austin Griffith
+*/
+
+
+
 const DEFAULT_SIZE = 1024;
 const RANDOM = false; //set this to false to start using block data instead of random
 
@@ -44,6 +53,7 @@ const WARRIORS = 31;
 const WARRIORSDOCK = 32;
 
 const CustomStyle = ({
+  time,
   fakeRandomHash,
   block,
   handleResize,
@@ -58,8 +68,8 @@ const CustomStyle = ({
 
   const SHIPDEPTH = SIZE / 4;
 
-  //const hash = fakeRandomHash
-  const { hash } = block;
+  const hash = fakeRandomHash
+  //const { hash } = block;
 
   let cloudSizes = [
     [400, 152],
@@ -225,10 +235,10 @@ const CustomStyle = ({
     for (let c = 1; c < 8; c++) {
       let blocksTraveled = 0;
 
-      let speed = 32;
+      let speed = (128 * takeTwoBytesOfEntropy()/65535) * M - (128 * takeTwoBytesOfEntropy()/65535) * M;
       let startingLocation = takeTwoBytesOfEntropy();
 
-      let location = startingLocation + blocksTraveled * speed;
+      let location = startingLocation + (time * speed);
       let cloudSize = cloudSizes[c - 1];
       let cloudwidth = cloudSize[0] * M;
       let cloudheight = cloudSize[1] * M;
@@ -438,10 +448,11 @@ const CustomStyle = ({
     for (let c = 1; c < 5; c++) {
       let blocksTraveled = 0;
 
-      let speed = 32;
+      let speed = (32 * takeTwoBytesOfEntropy()/65535) * M - (32 * takeTwoBytesOfEntropy()/65535) * M;
       let startingLocation = takeTwoBytesOfEntropy();
 
-      let location = startingLocation + blocksTraveled * speed;
+      let location = startingLocation + (time * speed);
+
       let cloudSize = cloudSizes[c - 1];
       let cloudwidth = cloudSize[0] * M;
       let cloudheight = cloudSize[1] * M;
@@ -478,11 +489,31 @@ const CustomStyle = ({
         if (!RANDOM) return byte;
         return Math.random() * 256;
       };
+
+      let shipMode = takeOneByteOfTransactionEntropy() % doggers.current.length
+
+      let traveled = 0
+
+      let speed = 4 + takeOneByteOfTransactionEntropy()%4 - takeOneByteOfTransactionEntropy()%4
+
+      if(shipMode==5){
+        traveled = (-1 * speed * M) * time
+      }else if(shipMode==4){
+        traveled = (speed * M) * time
+      }
+
+      let currentLocation = ((((width * takeOneByteOfTransactionEntropy()) / 255) + traveled))
+      if(currentLocation>width){
+        currentLocation-=width
+      }else if(currentLocation<0){
+        currentLocation+=width
+      }
+
       orderedShips.push([
         doggers.current[
-          takeOneByteOfTransactionEntropy() % doggers.current.length
+          shipMode
         ],
-        (width * takeOneByteOfTransactionEntropy()) / 255 - DOGGERWIDTH / 2,
+        currentLocation - DOGGERWIDTH / 2,
         horizon + 32 + (SHIPDEPTH * takeOneByteOfTransactionEntropy()) / 256,
         DOGGERWIDTH * 0.777 * M,
         DOGGERWIDTH * 0.777 * 0.9 * M,

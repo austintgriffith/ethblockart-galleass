@@ -4,6 +4,9 @@ import Sketch from 'react-p5';
 import useDimensions from 'react-cool-dimensions';
 import keccak256 from 'keccak256';
 
+import ControlSlider from './components/ControlSlider';
+
+
 import blocks from './blocks';
 import CustomStyle from './CustomStyle';
 
@@ -11,6 +14,8 @@ function App() {
   const [fakeRandomHash, setFakeRandomHash] = useState(
     keccak256(Date.now()).toString('hex').substr(2)
   );
+
+  const [time, setTime] = useState(0);
 
   /*
   Wrapped Component required to make p5 demos compatible with EthBlock.art
@@ -34,8 +39,20 @@ function App() {
       }}
     >
       <p>EthBlock.art P5.js boilerplate</p>
+      <ControlSlider
+        controlLabel="Block"
+        modValue={time}
+        modValueMin="1"
+        modValueMax={"256"}
+        modValueStep="1"
+        onChange={setTime}
+      />
+
       {width && height ? (
         <CustomStyle
+
+          time={time}
+
           width={width}
           block={blocks[1]}
           height={height}
