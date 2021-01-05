@@ -187,6 +187,21 @@ const CustomStyle = ({
         // should return an object structured following opensea/enjin metadata spec for attributes/properties
         // https://docs.opensea.io/docs/metadata-standards
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md#erc-1155-metadata-uri-json-schema
+   
+        attributes: [
+          {
+            display_type: 'number',
+            trait_type: 'your trait here number',
+            value: 42,
+          },
+         
+          {
+            trait_type: 'your trait here text',
+            value: "replace me",
+          },
+          
+        ],
+      };
       };
     };
   };
