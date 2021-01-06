@@ -5,7 +5,7 @@ import keccak256 from 'keccak256';
 
 /*
 title: Galleass
-description: Deterministic generative blockchain art in the Age of Sail.
+description: Blockchain art in the Age of Sail. Fish represent gas usage, ships represent transactions, the island is procedurally generated from the block hash and produces a deterministic inventory of NFT attributes.
 thumbnail image: https://austingriffith.com/images/galleassart.jpg
 creator name: Austin Griffith
 */
@@ -16,6 +16,8 @@ const DEFAULT_SIZE = 1024;
 const RANDOM = false; //set this to false to start using block data instead of random
 
 const DOGGERWIDTH = 75;
+const SCHOONERWIDTH = 140;
+
 const FISH_DENSITY = 42;
 const MAXGAS = 15000000;
 
@@ -66,7 +68,7 @@ const CustomStyle = ({
   const SIZE = width;
   let M = SIZE / DEFAULT_SIZE;
 
-  const SHIPDEPTH = SIZE / 4;
+  const SHIPDEPTH = SIZE / 5;
 
   //const hash = fakeRandomHash
   const { hash } = block;
@@ -88,6 +90,7 @@ const CustomStyle = ({
   let clouds = useRef([]);
   let oceanCover = useRef([]);
   let doggers = useRef([]);
+  let schooners = useRef([]);
   let fish = useRef([]);
   let tiles = useRef([]);
   let inventoryImages = useRef({});
@@ -164,6 +167,11 @@ const CustomStyle = ({
     for (let c = 0; c < 6; c++) {
       doggers.current[c] = p5.loadImage('/galleass/dogger' + (c + 1) + '.png');
     }
+
+    for (let c = 0; c < 4; c++) {
+      schooners.current[c] = p5.loadImage('/galleass/schooner' + (c + 1) + '.png');
+    }
+
     for (let c = 0; c < 10; c++) {
       fish.current[c] = p5.loadImage('/galleass/fish' + (c + 1) + '.png');
     }
@@ -479,6 +487,7 @@ const CustomStyle = ({
     let orderedShips = [];
     for (let t in block.transactions) {
       const transaction = block.transactions[t];
+
       let currentTransactionEntropyPointer = 2;
       const takeOneByteOfTransactionEntropy = () => {
         let byte =
@@ -489,16 +498,48 @@ const CustomStyle = ({
         return Math.random() * 256;
       };
 
-      let shipMode = takeOneByteOfTransactionEntropy() % doggers.current.length
+      let value = transaction.value.hex || transaction.value._hex
+      let calldata = transaction.data
 
+      let thisShipWidth
+      let shipMode
+      let thisShipImage
       let traveled = 0
 
-      let speed = 4 + takeOneByteOfTransactionEntropy()%4 - takeOneByteOfTransactionEntropy()%4
+      //console.log("TX",calldata,value)
 
-      if(shipMode==5){
-        traveled = (-1 * speed * M) * time
-      }else if(shipMode==4){
-        traveled = (speed * M) * time
+      if(calldata && calldata.length>2){
+        //console.log("big ship")
+        thisShipWidth = SCHOONERWIDTH
+        shipMode = takeOneByteOfTransactionEntropy() % schooners.current.length
+
+        let speed = 3 + takeOneByteOfTransactionEntropy()%3 - takeOneByteOfTransactionEntropy()%3
+
+        if(shipMode==2){
+          traveled = (-1 * speed * M) * time
+        }else if(shipMode==3){
+          traveled = (speed * M) * time
+        }
+
+        thisShipImage = schooners.current[
+          shipMode
+        ]
+      }else{
+        //console.log("little ship")
+        thisShipWidth = DOGGERWIDTH
+        shipMode = takeOneByteOfTransactionEntropy() % doggers.current.length
+
+        let speed = 4 + takeOneByteOfTransactionEntropy()%4 - takeOneByteOfTransactionEntropy()%4
+
+        if(shipMode==5){
+          traveled = (-1 * speed * M) * time
+        }else if(shipMode==4){
+          traveled = (speed * M) * time
+        }
+
+        thisShipImage = doggers.current[
+          shipMode
+        ]
       }
 
       let currentLocation = ((((width * takeOneByteOfTransactionEntropy()) / 255) + traveled))
@@ -509,18 +550,16 @@ const CustomStyle = ({
       }
 
       orderedShips.push([
-        doggers.current[
-          shipMode
-        ],
-        currentLocation - DOGGERWIDTH / 2,
+        thisShipImage,
+        currentLocation - thisShipWidth / 2,
         horizon + 32 + (SHIPDEPTH * takeOneByteOfTransactionEntropy()) / 256,
-        DOGGERWIDTH * 0.777 * M,
-        DOGGERWIDTH * 0.777 * 0.9 * M,
+        thisShipWidth * 0.777 * M,
+        thisShipWidth * 0.777 * 0.85 * M,
       ]);
     }
 
     orderedShips.sort((a, b) => {
-      return a[2] - b[2];
+      return (a[2]+a[4]) - (b[2]+b[4]);
     });
 
     for (let s in orderedShips) {
